@@ -1,0 +1,95 @@
+import json, uuid
+
+def gen_unique_id():
+    id = uuid.uuid4()
+    return str(id).upper()
+
+class Code:
+    def __init__(self) -> None:
+        self.startTime = -1
+        self.endTime = -1
+        self.uniqueId = gen_unique_id()
+        self.instanceNum = -1
+        
+    def generateText(self) -> str:
+        text = {
+                    "endTime": self.endTime,
+                    "instanceNum": self.instanceNum,
+                    "notes": "",
+                    "labels": [],
+                    "startTime": self.startTime,
+                    "sharing": True,
+                    "modifyCount": 4,
+                    "uniqueId": self.uniqueId
+                }
+        return text
+        
+
+class Row:
+    
+    count = 0
+    
+    def __init__(self) -> None:
+        self.name = "Coach Talking"
+        self.colour = "#6100CD"
+        self.uniqueId = gen_unique_id()
+        
+        Row.count += 1
+        self.rowNum = Row.count
+        
+        self.instances = []
+        self.instanceCount = 0
+        
+    def addInstance(self, code) -> None:
+        self.instanceCount += 1
+        code.instanceNum = self.instanceCount
+        self.instances.append(code.generateText())
+        
+    def generateText(self) -> str:
+        text = {
+                    "modifyCount": 2,
+                    "name": self.name,
+                    "color": self.colour,
+                    "instances": self.instances,
+                    "uniqueId": self.uniqueId,
+                    "rowNum": self.rowNum
+                }
+        
+        return text
+
+class Timeline:
+    def __init__(self) -> None:
+        self.rows = {}
+        
+    def addRow(self, row) -> None:
+        self.rows[row.name] = row
+        
+    def generateText(self) -> str:
+        
+        rowText = []
+        for row in self.rows.values():
+            rowText.append(row.generateText())
+        
+        text = {
+                    "timeline": {
+                        "currentModifyCount": 4,
+                        "uniqueId": gen_unique_id(),
+                        "rows": rowText,
+                        "labels": [
+                            {
+                                "group": "Coach talking",
+                                "name": "Positive Feedback"
+                            }
+                        ],
+                        "packagePath": "\/Users\/connorpowell\/Desktop\/newtest.SCVideo"
+                    },
+                    "currentPlaybackTime": 0
+                }
+        
+        return text
+    
+    def createFile(self) -> None:
+        with open('timeline.SCTimeline', 'w') as file:
+            file.write(
+                json.dumps(self.generateText(), separators=(',', ':'))
+                )

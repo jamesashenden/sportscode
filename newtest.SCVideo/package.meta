@@ -1,0 +1,10 @@
+{
+  "source" : "import",
+  "createdWithBuild" : "55790.d54139e",
+  "architecture" : "x86_64,arm64",
+  "createdDate" : "2024-08-06T20:42:18.545Z",
+  "version" : "1.0.0",
+  "type" : "standalone",
+  "createdWithVersion" : "12.39.0",
+  "hideGameTimeRows" : false
+}
