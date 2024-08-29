@@ -1,56 +1,61 @@
-from faster_whisper import WhisperModel
-from transformers import pipeline
-import json, uuid
+import sys
+from functools import partial
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QApplication, QMainWindow, QMenuBar, QWidget, QVBoxLayout, QLabel, QPushButton, QFileDialog
 
 from timeline import *
+from scvideo import *
+from analysis import run_analysis
 
-# TRANSCRIPTION SETUP
-model_size = "large-v3"
-# run on CPU with INT8
-model = WhisperModel(model_size, device="cpu", compute_type="int8")
-
-# NLP SETUP
-classifier = pipeline('sentiment-analysis')
-
-# Call to transcribe video.
-segments, info = model.transcribe("newtest.SCVideo/Video/Stream0000/Segment_00000.mov", beam_size=5)
-
-print("Detected language '%s' with probability %f" % (info.language, info.language_probability))
-
-timeline = Timeline()
-
-# Iterate through each segment in the transcription.
-for segment in segments:
-    print("[%.2fs -> %.2fs] %s" % (segment.start, segment.end, segment.text))
+class Window(QMainWindow):
+    """
+    Main application window / GUI.
+    """
     
-    # Run NLP on transcribed text.
-    result = classifier(segment.text)[0]
-    print("%s %.2f" % (result['label'], result['score']))
+    def __init__(self):
+        super().__init__(parent=None)
+        self.setWindowTitle("Sportscode")
+        self.setBaseSize(100, 100)
+        self.generalLayout = QVBoxLayout()
+        centralWidget = QWidget(self)
+        centralWidget.setLayout(self.generalLayout)
+        self.setCentralWidget(centralWidget)
+        
+        self.init_view()
     
-    code = Code()
-    code.startTime = segment.start
-    code.endTime = segment.end
-    
-    try:
-        timeline.rows[result['label']].addInstance(code)
-    except:
-        row = Row()
-        row.name = result['label']
-        timeline.addRow(row)
-        timeline.rows[result['label']].addInstance(code)
+    def init_view(self):
+        self.versionLabel = QLabel("Version: ")
+        self.generalLayout.addWidget(self.versionLabel)
+        
+        self.setButton = QPushButton("Change")
+        self.setButton.clicked.connect(partial(self.setVersionText, "HELLO"))
+        self.generalLayout.addWidget(self.setButton)
+        
+        self.uploadButton = QPushButton("Upload Video")
+        self.uploadButton.clicked.connect(self.uploadVideo)
+        self.generalLayout.addWidget(self.uploadButton)
 
-    
+    def setVersionText(self, text):
+        self.versionLabel.setText(text)
+        
+    def uploadVideo(self):
+        file_path, _ = QFileDialog.getOpenFileName(self, "Select the video to upload.")
+        if file_path:
+            self.setVersionText(file_path)
+            run_analysis(video_path=file_path)
+        else:
+            self.setVersionText("No file.")
+        
 
-# row = Row()
-# row.name = "Positive"
-# timeline.addRow(row)
+def main():
+    """
+    Application root main method.
+    """
+    app = QApplication([])
+    window = Window()
+    window.show()
+    sys.exit(app.exec())
 
-# row = Row()
-# row.name = "Negative"
-# timeline.addRow(row)
-
-# code = Code()
-# timeline.rows['Positive'].addInstance(code)
-# timeline.rows['Negative'].addInstance(code)
-
-timeline.createFile()
+if __name__ == "__main__":
+    main()

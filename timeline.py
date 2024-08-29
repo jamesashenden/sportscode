@@ -1,4 +1,4 @@
-import json, uuid
+import json, uuid, os
 
 def gen_unique_id():
     id = uuid.uuid4()
@@ -22,6 +22,7 @@ class Code:
                     "modifyCount": 4,
                     "uniqueId": self.uniqueId
                 }
+        
         return text
         
 
@@ -64,7 +65,7 @@ class Timeline:
     def addRow(self, row) -> None:
         self.rows[row.name] = row
         
-    def generateText(self) -> str:
+    def generateText(self, path) -> str:
         
         rowText = []
         for row in self.rows.values():
@@ -81,15 +82,15 @@ class Timeline:
                                 "name": "Positive Feedback"
                             }
                         ],
-                        "packagePath": "\/Users\/connorpowell\/Desktop\/newtest.SCVideo"
+                        "packagePath": path
                     },
                     "currentPlaybackTime": 0
                 }
         
         return text
     
-    def createFile(self) -> None:
-        with open('timeline.SCTimeline', 'w') as file:
+    def createFile(self, path, filename) -> None:
+        with open( os.path.join(path, filename+'.SCTimeline'), 'w' ) as file:
             file.write(
-                json.dumps(self.generateText(), separators=(',', ':'))
+                json.dumps(self.generateText(path), separators=(',', ':'))
                 )
