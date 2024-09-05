@@ -31,14 +31,15 @@ def run_analysis(video_path):
         code = Code()
         code.startTime = segment.start
         code.endTime = segment.end
+        code.labels.append(Labels.labels[result['label']])
         
         try:
-            timeline.rows[result['label']].addInstance(code)
+            timeline.rows["Coach's Voice"].addInstance(code)
         except:
             row = Row()
-            row.name = result['label']
+            row.name = "Coach's Voice"
             timeline.addRow(row)
-            timeline.rows[result['label']].addInstance(code)
+            timeline.rows["Coach's Voice"].addInstance(code)
 
         
 

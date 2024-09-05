@@ -4,19 +4,32 @@ def gen_unique_id():
     id = uuid.uuid4()
     return str(id).upper()
 
+class Labels:
+    labels = {
+        "POSITIVE" : {
+                        "name": "Positive",
+                        "group": "Primary Coaching Behaviour"
+                    },
+        "NEGATIVE" : {
+                        "name": "Negative",
+                        "group": "Primary Coaching Behaviour"
+                    }
+    }
+
 class Code:
     def __init__(self) -> None:
         self.startTime = -1
         self.endTime = -1
         self.uniqueId = gen_unique_id()
         self.instanceNum = -1
+        self.labels = []
         
     def generateText(self) -> str:
         text = {
                     "endTime": self.endTime,
                     "instanceNum": self.instanceNum,
                     "notes": "",
-                    "labels": [],
+                    "labels": self.labels,
                     "startTime": self.startTime,
                     "sharing": True,
                     "modifyCount": 4,
@@ -32,7 +45,7 @@ class Row:
     
     def __init__(self) -> None:
         self.name = "Coach Talking"
-        self.colour = "#6100CD"
+        self.colour = "#878787"
         self.uniqueId = gen_unique_id()
         
         Row.count += 1
