@@ -3,12 +3,12 @@ import os, json, shutil
 from timeline import gen_unique_id
 
 class SCVideo:
-    def __init__(self, filename, timeline, video_path) -> None:
-        self.filename = filename
+    def __init__(self, timeline, video_path, save_path) -> None:
+        self.filename = os.path.splitext(os.path.basename(video_path))[0]
         self.timeline = timeline
         self.video_path = video_path
         
-        self.rootPath = os.getcwd()
+        self.rootPath = save_path
         self.filePath = os.path.join(self.rootPath, self.filename+".SCVideo")
         
     def generatePackageMetaText(self) -> str:

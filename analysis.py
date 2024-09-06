@@ -1,5 +1,5 @@
 from faster_whisper import WhisperModel
-from transformers import pipeline
+#from transformers import pipeline
 
 from timeline import *
 from scvideo import *
@@ -10,9 +10,9 @@ model_size = "large-v3"
 model = WhisperModel(model_size, device="cpu", compute_type="int8")
 
 # NLP SETUP
-classifier = pipeline('sentiment-analysis')
+#classifier = pipeline('sentiment-analysis')
 
-def run_analysis(video_path):
+def run_analysis(video_path, save_path):
     # Call to transcribe video.
     segments, info = model.transcribe(video_path, beam_size=5)
 
@@ -25,13 +25,13 @@ def run_analysis(video_path):
         print("[%.2fs -> %.2fs] %s" % (segment.start, segment.end, segment.text))
         
         # Run NLP on transcribed text.
-        result = classifier(segment.text)[0]
-        print("%s %.2f" % (result['label'], result['score']))
+        #result = classifier(segment.text)[0]
+        #print("%s %.2f" % (result['label'], result['score']))
         
         code = Code()
         code.startTime = segment.start
         code.endTime = segment.end
-        code.labels.append(Labels.labels[result['label']])
+        code.labels.append(Labels.labels["POSITIVE"])
         
         try:
             timeline.rows["Coach's Voice"].addInstance(code)
@@ -55,5 +55,5 @@ def run_analysis(video_path):
     # timeline.rows['Positive'].addInstance(code)
     # timeline.rows['Negative'].addInstance(code)
 
-    scvideo = SCVideo(filename='fulltest', timeline=timeline, video_path=video_path)
+    scvideo = SCVideo(timeline=timeline, video_path=video_path, save_path=save_path)
     scvideo.createFile()
