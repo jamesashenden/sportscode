@@ -44,6 +44,16 @@ class SCVideo:
         return text
         
     def createFile(self) -> None:
+        
+        #Check whether .SCVideo already exists.
+        if os.path.exists(self.filePath):
+            extension = 1
+            new_file_path = os.path.join(self.rootPath, self.filename + " (" + str(extension) + ").SCVideo")
+            while os.path.exists( new_file_path ):
+                extension+=1
+                new_file_path = os.path.join(self.rootPath, self.filename + " (" + str(extension) + ").SCVideo")
+            self.filePath = new_file_path
+        
         os.mkdir(self.filePath) #Make .SCVideo folder.
         video_path = os.path.join(self.filePath, "Video")
         os.mkdir(video_path) #Make Video folder.

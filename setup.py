@@ -6,6 +6,7 @@ Usage:
 """
 
 from setuptools import setup
+from main import VERSION
 
 APP = ['main.py']
 DATA_FILES = []
@@ -13,8 +14,8 @@ OPTIONS = {
     'iconfile': 'icon.icns',
     'plist': {
         'CFBundleName': 'Sportscode',
-        'CFBundleShortVersionString': '0.0.1',
-        'CFBundleVersion': '0.0.1',
+        'CFBundleShortVersionString': VERSION,
+        'CFBundleVersion': VERSION,
         'CFBundleIdentifier': 'com.jamesashenden.sportscode'
     }
 }

@@ -1,12 +1,30 @@
-import sys, requests
+import sys, requests, zipfile, os, urllib.request, shutil, subprocess
 from functools import partial
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QApplication, QMainWindow, QMenuBar, QWidget, QVBoxLayout, QLabel, QPushButton, QFileDialog, QLineEdit, QHBoxLayout, QGridLayout
+from PyQt6.QtWidgets import QApplication, QMainWindow, QMenuBar, QWidget, QVBoxLayout, QLabel, QPushButton, QFileDialog, QLineEdit, QHBoxLayout, QGridLayout, QDialog
 
 from timeline import *
 from scvideo import *
 from analysis import run_analysis
+
+VERSION = "0.0.3"
+
+class DismissPopUp(QDialog):
+    def __init__(self, title, text):
+        super.__init__()
+        
+        self.setWindowTitle(title)
+        self.setGeometry(100, 100, 300, 200)
+        
+        layout = QVBoxLayout()
+        
+        label = QLabel(text)
+        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(label)
+        
+        self.setLayout(layout)
+        
 
 class Window(QMainWindow):
     """
@@ -22,7 +40,17 @@ class Window(QMainWindow):
         centralWidget.setLayout(self.generalLayout)
         self.setCentralWidget(centralWidget)
         
+        self.init_menubar()
         self.init_view()
+    
+    def init_menubar(self):
+        menubar = self.menuBar()
+        
+        file_menu = menubar.addMenu("File")
+        
+        updates_action = QAction("Check for Updates", self)
+        file_menu.addAction(updates_action)
+        #updates_action.triggered.connect()
     
     def init_view(self):
         
@@ -60,7 +88,7 @@ class Window(QMainWindow):
         
         ####
         # VERSION LABEL
-        self.versionLabel = QLabel("Version: 1.0")
+        self.versionLabel = QLabel("Version: " + VERSION)
         self.versionLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.generalLayout.addWidget(self.versionLabel)
         ####
@@ -79,6 +107,7 @@ class Window(QMainWindow):
 
     def setVersionText(self, text):
         self.versionLabel.setText(text)
+        QApplication.processEvents()
         
     def uploadVideo(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "Select the video to upload.")
@@ -100,30 +129,45 @@ class Window(QMainWindow):
         
     def checkForUpdates(self):
         # Get current version.
-        from setup import OPTIONS
-        current_version = OPTIONS['plist']['CFBundleShortVersionString']
+        current_version = VERSION
         
         # Get latest version.
-        response = requests.get("https://jamesashenden.github.io/sportscode/updates.txt")
+        response = requests.get("https://jamesashenden.github.io/sportscode/updates.json")
         if response.status_code != 200:
-            pass
-        latest_version = response.text.strip()
-        
+            return
+        latest = response.json()['latest']
+        latest_version = latest['version']
+        latest_url = latest['url']
+                
         # Compare latest version to current version.
         if not latest_version:
-            pass
+            return
         if current_version == latest_version:
-            pass
+            self.setVersionText("Latest version already installed!")
+            return
         
         # Download latest version.
-        save_path = os.getcwd()
-        response = requests.get("https://jamesashenden.github.io/sportscode/latest.zip", stream=True)
-        with open(save_path, 'wb') as file:
-            for chunk in response.iter_content(chunk_size=1024):
-                if chunk:
-                    file.write(chunk)
+        self.setVersionText("Downloading update...")
+        save_path = os.path.join(os.getcwd(), 'latest.zip')
+        r = requests.get(latest_url, stream=True)
+        with open(save_path, 'wb') as fd:
+            for chunk in r.iter_content(chunk_size=1024):
+                fd.write(chunk)
         
+        # Apply latest version.
+        app_path = os.path.join(os.getcwd(), "../../..")
+        self.setVersionText("Applying update...")
+        subprocess.run(['unzip', '-o', save_path, '-d', app_path], check=True)
     
+        # Delete zip file.
+        self.setVersionText("Removing update file...")
+        os.remove(save_path)
+        
+        # Restart app.
+        QApplication.quit()
+        python = sys.executable
+        os.execl(python, python, *sys.argv)
+        
 
 def main():
     """
