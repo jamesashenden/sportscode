@@ -12,7 +12,7 @@ model = WhisperModel(model_size, device="cpu", compute_type="int8")
 # NLP SETUP
 #classifier = pipeline('sentiment-analysis')
 
-def run_analysis(video_path, save_path, window):
+def run_analysis(video_path, save_path, window_model):
     # Call to transcribe video.
     segments, info = model.transcribe(video_path, beam_size=5)
 
@@ -68,7 +68,7 @@ def run_analysis(video_path, save_path, window):
         # Update progress bar.
         if count < 90:
             count+=10
-            window.updateProgressBar(count)
+            window_model.s_updateProgressBar.emit(count)
 
     # row = Row()
     # row.name = "Positive"
