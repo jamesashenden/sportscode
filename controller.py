@@ -45,6 +45,22 @@ class Controller:
         self.view.saveFileUpload.clicked.connect(self.chooseSavePath)
         # Show chosen save location in path.
         self.model.s_setSavePath.connect(self.view.setSavePath)
+        
+        """
+        Process Connections
+        """
+        self.processWorker = ProcessWorker(self.model)
+        
+        # Process Video button triggered, start process worker.
+        self.view.processButton.clicked.connect(self.processWorker.start)
+        # Toggle of input locks called.
+        self.model.s_toggleInputLock.connect(self.view.toggleInputLock)
+        # Update process progress bar called.
+        self.model.s_updateProgressBar.connect(self.view.setProcessProgressBar)
+        # Update process text called.
+        self.model.s_setProcessText.connect(self.view.setProcessText)
+        # Hide process text called.
+        self.model.s_hideProcessText.connect(self.view.hideProcessText)
     
     
     def chooseVideoPath(self):
@@ -84,3 +100,16 @@ class UpdatesWorker(QThread):
         
     def run(self):
         self.model.checkForUpdates()
+        
+
+class ProcessWorker(QThread):
+    """
+    Worker to handle processing video in the background.
+    """
+    
+    def __init__(self, model):
+        super().__init__()
+        self.model = model
+        
+    def run(self):
+        self.model.processVideo()

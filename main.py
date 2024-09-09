@@ -136,7 +136,7 @@ class WindowOLD(QMainWindow):
         self.progress_bar.setValue(1)
         QApplication.processEvents()
         
-        run_analysis(video_path=self.videoFileText.text(), save_path=self.saveFileText.text(), window=self)
+        run_analysis(video_path=self.videoFileText.text(), save_path=self.saveFileText.text())
         self.updateProgressBar(100)
         
     def checkForUpdates(self):

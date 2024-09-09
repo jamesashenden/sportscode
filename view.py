@@ -33,6 +33,7 @@ class View(QMainWindow):
         self.init_menubar()
         self.init_updates()
         self.init_paths()
+        self.init_process()
     
 
     def init_menubar(self):
@@ -129,3 +130,50 @@ class View(QMainWindow):
     # Shows chosen save location path.
     def setSavePath(self, path):
         self.saveFileText.setText(path)
+        
+    def init_process(self):
+        """
+        Initialises process video widgets.
+        """
+        
+        # PROCESSING PROGRESS BAR
+        self.processProgressBar = QProgressBar(self)
+        self.processProgressBar.setGeometry(30, 40, 400, 25)     
+        self.processProgressBar.setMaximum(100)
+        self.generalLayout.insertWidget(3, self.processProgressBar)
+        self.processProgressBar.hide()
+        
+        # PROCESSING LABEL
+        self.processText = QLabel("")
+        self.generalLayout.insertWidget(4, self.processText)
+        self.processText.hide()
+        
+        # PROCESS VIDEO BUTTON
+        self.processButton = QPushButton("Process Video")
+        self.generalLayout.addWidget(self.processButton)
+    
+    # Shows the process progress bar.
+    def setProcessProgressBar(self, value):
+        self.processProgressBar.show()
+        self.processProgressBar.setValue(value)
+        
+    # Shows and sets the process text.
+    def setProcessText(self, text):
+        self.processText.show()
+        self.processText.setText(text)
+        
+    # Hide process text.
+    def hideProcessText(self):
+        self.processText.hide()
+            
+    # Toggles locks to inputs.
+    def toggleInputLock(self, lock):
+        if lock:
+            self.videoFileUpload.setEnabled(False)
+            self.saveFileUpload.setEnabled(False)
+            self.processButton.setEnabled(False)
+            return
+        self.videoFileUpload.setEnabled(True)
+        self.saveFileUpload.setEnabled(True)
+        self.processButton.setEnabled(True)
+        

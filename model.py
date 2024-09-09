@@ -3,6 +3,7 @@ from PyQt6.QtCore import QObject, pyqtSignal, QThread
 import requests, time, os, subprocess
 
 from main import VERSION
+from analysis import run_analysis
 
 class Model(QObject):
     """
@@ -15,6 +16,11 @@ class Model(QObject):
     
     s_setVideoPath = pyqtSignal(str)
     s_setSavePath = pyqtSignal(str)
+    
+    s_toggleInputLock = pyqtSignal(int)
+    s_updateProgressBar = pyqtSignal(int)
+    s_setProcessText = pyqtSignal(str)
+    s_hideProcessText = pyqtSignal()
     
     version = VERSION
     
@@ -75,6 +81,30 @@ class Model(QObject):
         
         # Emit restart signal.
         self.s_completedUpdate.emit()
+        
+    def processVideo(self):
+        """
+        Process video method.
+        """
+        
+        # TODO: Error handling for no file popup.
+        
+        # Lock inputs.
+        self.s_toggleInputLock.emit(1)
+        self.s_hideProcessText.emit()
+        
+        # Show initial progress bar.
+        self.s_updateProgressBar.emit(0)
+        
+        # Start analysis.
+        run_analysis(video_path=self.videoPath, save_path=self.savePath, window_model=self)
+        
+        # Show complete.
+        self.s_updateProgressBar.emit(100)
+        self.s_setProcessText.emit("Complete!")
+        
+        # Unlock inputs.
+        self.s_toggleInputLock.emit(0)
         
     def setVideoPath(self, path):
         """
