@@ -113,15 +113,11 @@ class Window(QMainWindow):
         file_path, _ = QFileDialog.getOpenFileName(self, "Select the video to upload.")
         if file_path:
             self.videoFileText.setText(file_path)
-        else:
-            self.setVersionText("No file.")
         
     def setSaveLocation(self):
         folder_path  = QFileDialog.getExistingDirectory(self, "Select a save location.")
         if folder_path:
             self.saveFileText.setText(folder_path)
-        else:
-            self.setVersionText("No file.")
             
     def updateProgressBar(self, value):
         self.progress_bar.setValue(value)
