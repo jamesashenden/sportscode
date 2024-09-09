@@ -1,30 +1,14 @@
-import sys, requests, zipfile, os, urllib.request, shutil, subprocess
+import sys, requests, zipfile, os, urllib.request, shutil, subprocess, time
 from functools import partial
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QApplication, QMainWindow, QMenuBar, QWidget, QVBoxLayout, QLabel, QPushButton, QFileDialog, QLineEdit, QHBoxLayout, QGridLayout, QDialog
+from PyQt6.QtWidgets import QApplication, QMainWindow, QMenuBar, QWidget, QVBoxLayout, QLabel, QPushButton, QFileDialog, QLineEdit, QHBoxLayout, QGridLayout, QDialog, QMessageBox, QProgressBar
 
 from timeline import *
 from scvideo import *
 from analysis import run_analysis
 
-VERSION = "0.0.3"
-
-class DismissPopUp(QDialog):
-    def __init__(self, title, text):
-        super.__init__()
-        
-        self.setWindowTitle(title)
-        self.setGeometry(100, 100, 300, 200)
-        
-        layout = QVBoxLayout()
-        
-        label = QLabel(text)
-        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(label)
-        
-        self.setLayout(layout)
-        
+VERSION = "0.0.3"      
 
 class Window(QMainWindow):
     """
@@ -34,7 +18,7 @@ class Window(QMainWindow):
     def __init__(self):
         super().__init__(parent=None)
         self.setWindowTitle("Sportscode")
-        self.setBaseSize(100, 100)
+        self.setGeometry(0, 0, 500, 200)
         self.generalLayout = QVBoxLayout()
         centralWidget = QWidget(self)
         centralWidget.setLayout(self.generalLayout)
@@ -42,6 +26,13 @@ class Window(QMainWindow):
         
         self.init_menubar()
         self.init_view()
+        
+        # Place in center of screen.
+        screen_geometry = QApplication.primaryScreen().availableGeometry()
+        window_geometry = self.frameGeometry()
+        center_point = screen_geometry.center()
+        window_geometry.moveCenter(center_point)
+        self.move(window_geometry.topLeft())
     
     def init_menubar(self):
         menubar = self.menuBar()
@@ -50,9 +41,25 @@ class Window(QMainWindow):
         
         updates_action = QAction("Check for Updates", self)
         file_menu.addAction(updates_action)
-        #updates_action.triggered.connect()
+        updates_action.triggered.connect(self.checkForUpdates)
     
     def init_view(self):
+        
+        ####
+        # VERSION LABEL
+        self.versionLabel = QLabel("Version: " + VERSION)
+        self.versionLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.generalLayout.addWidget(self.versionLabel)
+        ####
+        
+        ####
+        # PROGRESS BAR
+        self.progress_bar = QProgressBar(self)
+        self.progress_bar.setGeometry(30, 40, 400, 25)
+        self.progress_bar.setMaximum(100)
+        self.generalLayout.addWidget(self.progress_bar)
+        self.progress_bar.hide()
+        ####
         
         ####
         # FILES LAYOUT
@@ -87,17 +94,10 @@ class Window(QMainWindow):
         ####
         
         ####
-        # VERSION LABEL
-        self.versionLabel = QLabel("Version: " + VERSION)
-        self.versionLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
-        self.generalLayout.addWidget(self.versionLabel)
-        ####
-        
-        ####
         # CHECK FOR UPDATES BUTTON
-        self.updatesButton = QPushButton("Check for Updates")
-        self.updatesButton.clicked.connect(self.checkForUpdates)
-        self.generalLayout.addWidget(self.updatesButton)
+        # self.updatesButton = QPushButton("Check for Updates")
+        # self.updatesButton.clicked.connect(self.checkForUpdates)
+        # self.generalLayout.addWidget(self.updatesButton)
         ####
         
         #self.setButton = QPushButton("Change")
@@ -111,7 +111,6 @@ class Window(QMainWindow):
         
     def uploadVideo(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "Select the video to upload.")
-        print(file_path)
         if file_path:
             self.videoFileText.setText(file_path)
         else:
@@ -124,8 +123,21 @@ class Window(QMainWindow):
         else:
             self.setVersionText("No file.")
             
+    def updateProgressBar(self, value):
+        self.progress_bar.setValue(value)
+        QApplication.processEvents()
+        self.progress_bar.setValue(value)
+        QApplication.processEvents()
+            
     def processVideo(self):
-        run_analysis(video_path=self.videoFileText.text(), save_path=self.saveFileText.text())
+        self.progress_bar.show()
+        self.progress_bar.setValue(0)
+        QApplication.processEvents()
+        self.progress_bar.setValue(1)
+        QApplication.processEvents()
+        
+        run_analysis(video_path=self.videoFileText.text(), save_path=self.saveFileText.text(), window=self)
+        self.updateProgressBar(100)
         
     def checkForUpdates(self):
         # Get current version.
@@ -143,25 +155,52 @@ class Window(QMainWindow):
         if not latest_version:
             return
         if current_version == latest_version:
-            self.setVersionText("Latest version already installed!")
+            # Show popup confirmation and break.
+            popup = QMessageBox()
+            popup.setWindowTitle("Check for Updates")
+            popup.setText("Latest version v" + latest_version + " already installed.")
+            popup.setIcon(QMessageBox.Icon.Information)
+            popup.setStandardButtons(QMessageBox.StandardButton.Ok)
+            popup.exec()            
             return
         
+        # Show update bar.
+        self.update_bar = QProgressBar(self)
+        self.update_bar.setGeometry(30, 40, 400, 25)
+        self.update_bar.setMaximum(100)
+        self.generalLayout.addWidget(self.update_bar)
+        # Show label.
+        self.updating_label = QLabel("Downloading update...")
+        self.generalLayout.addWidget(self.updating_label)
+        self.update_bar.setValue(25)
+        QApplication.processEvents()
+        
         # Download latest version.
-        self.setVersionText("Downloading update...")
         save_path = os.path.join(os.getcwd(), 'latest.zip')
         r = requests.get(latest_url, stream=True)
         with open(save_path, 'wb') as fd:
             for chunk in r.iter_content(chunk_size=1024):
                 fd.write(chunk)
         
+        self.update_bar.setValue(65)
+        self.updating_label = QLabel("Installing...")
+        QApplication.processEvents()
+        
         # Apply latest version.
         app_path = os.path.join(os.getcwd(), "../../..")
         self.setVersionText("Applying update...")
         subprocess.run(['unzip', '-o', save_path, '-d', app_path], check=True)
+        
+        self.update_bar.setValue(85)
+        self.updating_label = QLabel("Removing update file...")
+        QApplication.processEvents()
     
         # Delete zip file.
-        self.setVersionText("Removing update file...")
         os.remove(save_path)
+        
+        self.update_bar.setValue(75)
+        self.updating_label = QLabel("Restarting...")
+        QApplication.processEvents()
         
         # Restart app.
         QApplication.quit()
