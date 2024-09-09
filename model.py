@@ -11,11 +11,25 @@ class Model(QObject):
     s_checkUpdatesOnLatestVersion = pyqtSignal(str)
     s_downloadingUpdate = pyqtSignal()
     s_installingUpdate = pyqtSignal()
+    s_completedUpdate = pyqtSignal()
+    
+    s_setVideoPath = pyqtSignal(str)
+    s_setSavePath = pyqtSignal(str)
+    
+    version = VERSION
+    
+    videoPath = ""
+    savePath = ""
     
     def __init__(self):
         super().__init__()
+        
     
     def checkForUpdates(self):
+        """
+        Updates method.
+        """
+        
         # Get current version.
         current_version = VERSION
         
@@ -58,3 +72,20 @@ class Model(QObject):
         
         # Delete zip file.
         os.remove(save_path)
+        
+        # Emit restart signal.
+        self.s_completedUpdate.emit()
+        
+    def setVideoPath(self, path):
+        """
+        videoPath setter.
+        """
+        self.videoPath = path
+        self.s_setVideoPath.emit(path)
+        
+    def setSavePath(self, path):
+        """
+        savePath setter.
+        """
+        self.savePath = path
+        self.s_setSavePath.emit(path)

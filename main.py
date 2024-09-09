@@ -12,7 +12,7 @@ from timeline import *
 from scvideo import *
 from analysis import run_analysis
 
-VERSION = "0.0.3"
+VERSION = "0.0.4"
 
 class WindowOLD(QMainWindow):
     """

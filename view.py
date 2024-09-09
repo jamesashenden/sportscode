@@ -1,3 +1,4 @@
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMenuBar, QWidget, QVBoxLayout, QLabel, QPushButton, QFileDialog, QLineEdit, QHBoxLayout, QGridLayout, QDialog, QMessageBox, QProgressBar
 
@@ -30,7 +31,8 @@ class View(QMainWindow):
         
         # Initialise view components.
         self.init_menubar()
-        self.init_view()
+        self.init_updates()
+        self.init_paths()
     
 
     def init_menubar(self):
@@ -74,7 +76,7 @@ class View(QMainWindow):
         self.updatesLabel.setText("Installing update...")
     
    
-    def init_view(self):
+    def init_updates(self):
         """
         Initialises main view widgets.
         """
@@ -90,3 +92,40 @@ class View(QMainWindow):
         self.updatesLabel = QLabel("BLANK")
         self.generalLayout.addWidget(self.updatesLabel)
         self.updatesLabel.hide()
+
+        # VERSION LABEL
+        self.versionLabel = QLabel("Version: ?")
+        self.versionLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.generalLayout.addWidget(self.versionLabel)
+
+
+    def init_paths(self):
+        """
+        Initialises path view widgets.
+        """
+        
+        # VIDEO FILE 
+        self.filesLayout = QGridLayout()
+        
+        self.videoFileText = QLineEdit()
+        self.filesLayout.addWidget(self.videoFileText, 0, 0)
+        
+        self.videoFileUpload = QPushButton("Upload Video")
+        self.filesLayout.addWidget(self.videoFileUpload, 0, 1)
+        
+        # SAVE LOCATION       
+        self.saveFileText = QLineEdit()
+        self.filesLayout.addWidget(self.saveFileText, 1, 0)
+        
+        self.saveFileUpload = QPushButton("Choose Save Location")
+        self.filesLayout.addWidget(self.saveFileUpload, 1, 1)
+        
+        self.generalLayout.addLayout(self.filesLayout)
+        
+    # Shows chosen video file path.
+    def setVideoPath(self, path):
+        self.videoFileText.setText(path)
+        
+    # Shows chosen save location path.
+    def setSavePath(self, path):
+        self.saveFileText.setText(path)
