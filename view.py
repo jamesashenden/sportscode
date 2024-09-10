@@ -75,13 +75,24 @@ class View(QMainWindow):
         
         self.updatesProgressBar.setValue(75)
         self.updatesLabel.setText("Installing update...")
-    
+        
+    # Shows pop-up display to confirm installation of update.
+    def showUpdateRequired(self):
+        popup = QMessageBox()
+        popup.setWindowTitle("Automatic Updates")
+        popup.setText("A new version is available. Would you like to install?")
+        popup.setIcon(QMessageBox.Icon.Warning)
+        popup.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        
+        reply = popup.exec()
+        if reply == QMessageBox.StandardButton.Yes:
+            self.checkUpdatesAction.trigger()
+        
    
     def init_updates(self):
         """
         Initialises main view widgets.
         """
-        
         # UPDATES PROGRESS BAR
         self.updatesProgressBar = QProgressBar(self)
         self.updatesProgressBar.setGeometry(30, 40, 400, 25)
@@ -130,6 +141,15 @@ class View(QMainWindow):
     # Shows chosen save location path.
     def setSavePath(self, path):
         self.saveFileText.setText(path)
+        
+    # Shows pop-up display already on latest version information.
+    def showPathsError(self, error):
+        popup = QMessageBox()
+        popup.setWindowTitle("Error")
+        popup.setText(error)
+        popup.setIcon(QMessageBox.Icon.Warning)
+        popup.setStandardButtons(QMessageBox.StandardButton.Ok)
+        popup.exec()
         
     def init_process(self):
         """

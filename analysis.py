@@ -1,20 +1,16 @@
-from faster_whisper import WhisperModel
-#from transformers import pipeline
+from faster_whisper import WhisperModel, download_model
 
 from timeline import *
 from scvideo import *
 
 # TRANSCRIPTION SETUP
-model_size = "large-v3"
-# run on CPU with INT8
+model_size = "distil-large-v3"
 model = WhisperModel(model_size, device="cpu", compute_type="int8")
 
-# NLP SETUP
-#classifier = pipeline('sentiment-analysis')
 
 def run_analysis(video_path, save_path, window_model):
     # Call to transcribe video.
-    segments, info = model.transcribe(video_path, beam_size=5)
+    segments, info = model.transcribe(video_path, beam_size=5, language="en")
 
     print("Detected language '%s' with probability %f" % (info.language, info.language_probability))
 
@@ -47,10 +43,6 @@ def run_analysis(video_path, save_path, window_model):
             
         last_segment_end = segment.end
         
-        # Run NLP on transcribed text.
-        #result = classifier(segment.text)[0]
-        #print("%s %.2f" % (result['label'], result['score']))
-        
         code = Code()
         code.startTime = segment.start
         code.endTime = segment.end
@@ -65,22 +57,13 @@ def run_analysis(video_path, save_path, window_model):
             timeline.addRow(row)
             timeline.rows["Coach's Voice"].addInstance(code)
             
+        # Show transcribed text.
+        window_model.s_setProcessText.emit(segment.text)
+            
         # Update progress bar.
         if count < 90:
-            count+=10
+            count+=5
             window_model.s_updateProgressBar.emit(count)
-
-    # row = Row()
-    # row.name = "Positive"
-    # timeline.addRow(row)
-
-    # row = Row()
-    # row.name = "Negative"
-    # timeline.addRow(row)
-
-    # code = Code()
-    # timeline.rows['Positive'].addInstance(code)
-    # timeline.rows['Negative'].addInstance(code)
 
     scvideo = SCVideo(timeline=timeline, video_path=video_path, save_path=save_path)
     scvideo.createFile()
