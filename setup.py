@@ -6,7 +6,8 @@ Usage:
 """
 
 from setuptools import setup
-from main import VERSION
+
+VERSION = "0.0.4"
 
 APP = ['main.py']
 DATA_FILES = []
