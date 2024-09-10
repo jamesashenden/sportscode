@@ -63,7 +63,7 @@ def run_analysis(video_path, save_path, window_model):
             
         # Update progress bar.
         if count < 90:
-            count+=10
+            count+=5
             window_model.s_updateProgressBar.emit(count)
 
     scvideo = SCVideo(timeline=timeline, video_path=video_path, save_path=save_path)

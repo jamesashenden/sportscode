@@ -16,6 +16,7 @@ class Model(QObject):
     
     s_setVideoPath = pyqtSignal(str)
     s_setSavePath = pyqtSignal(str)
+    s_showPathsError = pyqtSignal(str)
     
     s_toggleInputLock = pyqtSignal(int)
     s_updateProgressBar = pyqtSignal(int)
@@ -26,6 +27,7 @@ class Model(QObject):
     
     videoPath = ""
     savePath = ""
+    valid_extensions = [".MP4", ".mp4", ".mov", ".MOV"]
     
     def __init__(self):
         super().__init__()
@@ -87,7 +89,13 @@ class Model(QObject):
         Process video method.
         """
         
-        # TODO: Error handling for no file popup.
+        # Show error if no paths are selected.
+        if self.videoPath == "":
+            self.s_showPathsError.emit("Please select a video file to process.")
+            return
+        if self.savePath == "":
+            self.s_showPathsError.emit("Please select a location to save the processed video.")
+            return
         
         # Lock inputs.
         self.s_toggleInputLock.emit(1)
@@ -110,7 +118,12 @@ class Model(QObject):
         """
         videoPath setter.
         """
-        self.videoPath = path
+        extension = os.path.splitext(os.path.basename(path))[1]
+        if extension not in self.valid_extensions: # If invalid extensions show error.
+            self.s_showPathsError.emit("Invalid file type - please select a video file.")
+            return
+        
+        self.videoPath = path    
         self.s_setVideoPath.emit(path)
         
     def setSavePath(self, path):

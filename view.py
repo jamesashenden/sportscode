@@ -131,6 +131,15 @@ class View(QMainWindow):
     def setSavePath(self, path):
         self.saveFileText.setText(path)
         
+    # Shows pop-up display already on latest version information.
+    def showPathsError(self, error):
+        popup = QMessageBox()
+        popup.setWindowTitle("Error")
+        popup.setText(error)
+        popup.setIcon(QMessageBox.Icon.Warning)
+        popup.setStandardButtons(QMessageBox.StandardButton.Ok)
+        popup.exec()
+        
     def init_process(self):
         """
         Initialises process video widgets.

@@ -45,6 +45,9 @@ class Controller:
         self.view.saveFileUpload.clicked.connect(self.chooseSavePath)
         # Show chosen save location in path.
         self.model.s_setSavePath.connect(self.view.setSavePath)
+
+        #Show error pop-up.
+        self.model.s_showPathsError.connect(self.view.showPathsError)
         
         """
         Process Connections
