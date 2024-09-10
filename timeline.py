@@ -6,14 +6,78 @@ def gen_unique_id():
 
 class Labels:
     labels = {
-        "POSITIVE" : {
-                        "name": "Positive",
+        "Corrective Feedback" : {
+                        "name": "Corrective Feedback",
                         "group": "Primary Coaching Behaviour"
                     },
-        "NEGATIVE" : {
-                        "name": "Negative",
+        "General Feedback +ve" : {
+                        "name": "General Feedback +ve",
                         "group": "Primary Coaching Behaviour"
-                    }
+                    },
+        "General Feedback -ve" : {
+                        "name": "General Feedback +ve",
+                        "group": "Primary Coaching Behaviour"
+                    },
+        "Specific Feedback +ve" : {
+                        "name": "Specific Feedback +ve",
+                        "group": "Primary Coaching Behaviour"
+                    },
+        "Specific Feedback -ve" : {
+                        "name": "Specific Feedback +ve",
+                        "group": "Primary Coaching Behaviour"
+                    },
+        "Humour" : {
+                        "name": "Humour",
+                        "group": "Primary Coaching Behaviour"
+                    },
+        "Hustle" : {
+                        "name": "Hustle",
+                        "group": "Primary Coaching Behaviour"
+                    },
+        "Instruction" : {
+                        "name": "Instruction",
+                        "group": "Primary Coaching Behaviour"
+                    },
+        "Management - Criticisms" : {
+                        "name": "Management - Criticisms",
+                        "group": "Primary Coaching Behaviour"
+                    },
+        "Management - Direct" : {
+                        "name": "Management - Direct",
+                        "group": "Primary Coaching Behaviour"
+                    },
+        "Management - Indirect" : {
+                        "name": "Management - Indirect",
+                        "group": "Primary Coaching Behaviour"
+                    },
+        "Positive Modelling" : {
+                        "name": "Positive Modelling",
+                        "group": "Primary Coaching Behaviour"
+                    },
+        "Negative Modelling" : {
+                        "name": "Negative Modelling",
+                        "group": "Primary Coaching Behaviour"
+                    },
+        "Praise" : {
+                        "name": "Praise",
+                        "group": "Primary Coaching Behaviour"
+                    },
+        "Punishment / Scold" : {
+                        "name": "Punishment / Scold",
+                        "group": "Primary Coaching Behaviour"
+                    },
+        "Question Open" : {
+                        "name": "Question Open",
+                        "group": "Primary Coaching Behaviour"
+                    },
+        "Question Closed" : {
+                        "name": "Question Closed",
+                        "group": "Primary Coaching Behaviour"
+                    },
+        "Response to Question" : {
+                        "name": "Response to Question",
+                        "group": "Primary Coaching Behaviour"
+                    },
     }
 
 class Code:
