@@ -9,6 +9,7 @@ class Model(QObject):
     """
     MODEL component of MVC.
     """
+    s_startupUpdateRequired = pyqtSignal()
     s_checkUpdatesOnLatestVersion = pyqtSignal(str)
     s_downloadingUpdate = pyqtSignal()
     s_installingUpdate = pyqtSignal()
@@ -33,11 +34,32 @@ class Model(QObject):
         super().__init__()
         
     
+    def startupUpdateCheck(self):
+        """
+        Check for updates on start.
+        """
+        # Get current version.
+        current_version = VERSION
+        
+        # Get latest version.
+        response = requests.get("https://jamesashenden.github.io/sportscode/updates.json")
+        if response.status_code != 200: # If invalid or error response, break.
+            return
+        latest = response.json()['latest']
+        if not latest:
+            return
+        latest_version = latest['version']
+        
+        if current_version == latest_version: # If already on the latest version, break.
+            return
+        
+        self.s_startupUpdateRequired.emit() # Show popup message.
+        
+    
     def checkForUpdates(self):
         """
         Updates method.
         """
-        
         # Get current version.
         current_version = VERSION
         

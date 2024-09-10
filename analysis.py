@@ -1,11 +1,10 @@
-from faster_whisper import WhisperModel
+from faster_whisper import WhisperModel, download_model
 
 from timeline import *
 from scvideo import *
 
 # TRANSCRIPTION SETUP
 model_size = "distil-large-v3"
-# run on CPU with INT8
 model = WhisperModel(model_size, device="cpu", compute_type="int8")
 
 

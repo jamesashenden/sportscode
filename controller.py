@@ -21,6 +21,9 @@ class Controller:
         """
         self.updatesWorker = UpdatesWorker(self.model)
         
+        # Connect auto start updates.
+        self.model.s_startupUpdateRequired.connect(self.view.showUpdateRequired)
+        
         # Check for Updates button triggered.
         self.view.checkUpdatesAction.triggered.connect(self.updatesWorker.start)
         # Show latest version message.
@@ -32,6 +35,7 @@ class Controller:
         self.model.s_installingUpdate.connect(self.view.showInstallingUpdate)
         # Once update complete, restart app.
         self.model.s_completedUpdate.connect(self.restart)
+        
         
         """
         Paths Connections
@@ -65,6 +69,8 @@ class Controller:
         # Hide process text called.
         self.model.s_hideProcessText.connect(self.view.hideProcessText)
     
+        # Check for updates on startup.
+        self.model.startupUpdateCheck()
     
     def chooseVideoPath(self):
         """
