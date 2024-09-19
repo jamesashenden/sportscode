@@ -97,7 +97,6 @@ class Model(QObject):
         
         # Apply latest version.
         app_path = os.path.join(os.getcwd(), "../../..")
-        self.setVersionText("Applying update...")
         subprocess.run(['unzip', '-o', save_path, '-d', app_path], check=True)
         
         # Delete zip file.

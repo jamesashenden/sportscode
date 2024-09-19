@@ -7,7 +7,7 @@ Usage:
 
 from setuptools import setup
 
-VERSION = "0.0.4"
+VERSION = "0.0.6"
 
 APP = ['main.py']
 DATA_FILES = []
