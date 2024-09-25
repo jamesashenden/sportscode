@@ -6,8 +6,11 @@ Usage:
 """
 
 from setuptools import setup
+import sys
 
-VERSION = "0.0.4"
+sys.setrecursionlimit(2000)
+
+VERSION = "0.0.6"
 
 APP = ['main.py']
 DATA_FILES = []
@@ -18,7 +21,9 @@ OPTIONS = {
         'CFBundleShortVersionString': VERSION,
         'CFBundleVersion': VERSION,
         'CFBundleIdentifier': 'com.jamesashenden.sportscode'
-    }
+    },
+    'packages': ['ruamel'],
+    'includes': ['ruamel', 'pyannote.audio.pipelines', 'pyannote.audio.models', 'pyannote.audio.models.segmentation', 'speechbrain', 'pyannote.audio.models.embedding']
 }
 
 setup(

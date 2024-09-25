@@ -10,9 +10,8 @@ from controller import *
 
 from timeline import *
 from scvideo import *
-from analysis import run_analysis
 
-VERSION = "0.0.4"        
+VERSION = "0.0.6"        
 
 def main():
     """
