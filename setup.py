@@ -6,6 +6,9 @@ Usage:
 """
 
 from setuptools import setup
+import sys
+
+sys.setrecursionlimit(2000)
 
 VERSION = "0.0.6"
 
@@ -18,7 +21,9 @@ OPTIONS = {
         'CFBundleShortVersionString': VERSION,
         'CFBundleVersion': VERSION,
         'CFBundleIdentifier': 'com.jamesashenden.sportscode'
-    }
+    },
+    'packages': ['ruamel'],
+    'includes': ['ruamel', 'pyannote.audio.pipelines', 'pyannote.audio.models', 'pyannote.audio.models.segmentation', 'speechbrain', 'pyannote.audio.models.embedding']
 }
 
 setup(

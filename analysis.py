@@ -1,7 +1,9 @@
 from faster_whisper import WhisperModel
 from pyannote.audio import Pipeline
-from moviepy.editor import VideoFileClip
+from pydub import AudioSegment
 import torch
+import librosa
+import soundfile as sf
 
 from timeline import *
 from scvideo import *
@@ -12,7 +14,7 @@ model = WhisperModel(model_size, device="cpu", compute_type="int8")
 
 # DIARIZATION SETUP
 mps_device = torch.device("mps")
-pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization", use_auth_token="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")
+pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization-3.1", use_auth_token="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")
 pipeline.to(mps_device)
 
 # CONSTANTS
@@ -20,11 +22,12 @@ match_margin = 0.2
 
 # Function to convert MP4 to WAV
 def mp4_to_wav(mp4_path):
-    wav_path = "temp.wav"
-    video = VideoFileClip(mp4_path)
-    audio = video.audio
-    audio.write_audiofile(wav_path, codec='pcm_s16le')
-    video.close()
+    wav_path = os.path.join(os.getcwd(), "temp.wav")
+    #audio = AudioSegment.from_file(mp4_path, format="mp4")
+    #audio.export(wav_path, format="wav")
+    audio , sr = librosa.load(mp4_path)
+    with open(wav_path, 'w') as file:
+        sf.write(wav_path, audio, sr)
     return wav_path
 
 def run_analysis(video_path, save_path, window_model):
@@ -45,12 +48,6 @@ def run_analysis(video_path, save_path, window_model):
     # Add Silence row.
     row = Row()
     row.name = "Silence"
-    row.colour = "#535353"
-    timeline.addRow(row)
-    
-    # Add Silence row.
-    row = Row()
-    row.name = "No Speaker"
     row.colour = "#535353"
     timeline.addRow(row)
     
